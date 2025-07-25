@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Profile List</h1>
+    <br/>
+
+    {% if profiles %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for profile in profiles %}
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="{% static 'images/download.png' %}" class="card-img-top" alt="{{ profile.user.username }}'s Profile Image">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ profile.user.username }}</h5>
+                            <p class="card-text">@{{ profile.user.username|lower }}</p>
+                            <p class="card-text">
+                                <small class="text-muted">Updated: {{ profile.date_modified|date:"F j, Y, g:i a" }}</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No profiles found.</p>
+    {% endif %}
+</div>
+{% endblock %}

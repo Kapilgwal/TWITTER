@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if profile %}
+<div class="container mt-4">
+    <h2 class="mb-4">{{ profile.user.username }}'s Profile</h2>
+
+    <!-- Followings Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <strong>Follows</strong>
+        </div>
+        <div class="card-body">
+            {% if profile.follows.all %}
+                <ul class="list-group list-group-flush">
+                    {% for following in profile.follows.all %}
+                        <li class="list-group-item">
+                            <a href="{% url 'profile' following.user.id %}">
+                                @{{ following.user.username }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">This user is not following anyone.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Followers Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <strong>Followed By</strong>
+        </div>
+        <div class="card-body">
+            {% if profile.follows_by.all %}
+                <ul class="list-group list-group-flush">
+                    {% for follower in profile.follows_by.all %}
+                        <li class="list-group-item">
+                            <a href="{% url 'profile' follower.user.id %}">
+                                @{{ follower.user.username }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">This user has no followers.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% else %}
+    <div class="container mt-4">
+        <p class="text-danger">Profile not found.</p>
+    </div>
+{% endif %}
+
+{% endblock content %}
