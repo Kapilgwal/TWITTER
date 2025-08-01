@@ -23,6 +23,17 @@
                         <button type="submit" class="btn btn-outline-success" name="follow" value="follow">Follow</button>
                     {% endif %}
                 </form>
+
+                <br>
+
+
+                {% if request.user.id == profile.user.id %}
+
+                <a href="{%url 'update_user' %}" class="btn btn-outline-secondary">
+                    Update Profile
+                </a>
+
+                {% endif %}
             </div>
         </div>
         <div class="card-footer d-flex justify-content-start text-center">
@@ -37,9 +48,7 @@
         </div>
     </div>
 
-    <!-- Vertical Division -->
     <div class="row">
-        <!-- Left Column: Meeps -->
         <div class="col-md-8">
             <h5 class="mb-3">Posts</h5>
             {% if meeps %}
@@ -58,10 +67,8 @@
             {% endif %}
         </div>
 
-        <!-- Right Column: Follow Info -->
         <div class="col-md-4">
 
-            <!-- Following -->
             <div class="card mb-4 shadow-sm">
                 <div class="card-header bg-primary text-white">
                     <strong>Following</strong>
@@ -81,7 +88,6 @@
                 </div>
             </div>
 
-            <!-- Followers -->
             <div class="card mb-4 shadow-sm">
                 <div class="card-header bg-success text-white">
                     <strong>Followers</strong>
