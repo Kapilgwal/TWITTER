@@ -2,16 +2,15 @@
 
 {% block content %}
 
+<form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
 
-    <form action="" method = "POST">
+    {{ user_form.as_p }}
+    <br><br>
+    {{ profile_form.as_p }}
+    <br><br>
+    
+    <button type="submit">Update</button>
+</form>
 
-        {% csrf_token %}
-        {{form.as_p}}
-        <br>
-        <br>
-        
-        <button type = "submit">Update</button>
-
-    </form>
-
-{% endblock  %}
+{% endblock %}

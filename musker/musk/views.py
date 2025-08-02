@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from .models import Profile,Meep
-from .forms import MeepForm,SignUpForm,UserUpdateForm
+from .forms import MeepForm,SignUpForm,UserUpdateForm,ProfilePicForm
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.forms import UserCreationForm
 from django import forms 
@@ -103,22 +103,34 @@ def register_user(request):
     return render(request,'register.html',{'form' : form})
 
 from .forms import UserUpdateForm
+from django.shortcuts import get_object_or_404
 
 def update_user(request):
-    if request.user.is_authenticated:
-        user = request.user
-
-        if request.method == 'POST':
-            form = UserUpdateForm(request.POST, instance=user)
-            if form.is_valid():
-                form.save()
-                messages.success(request, "Your profile has been updated")
-                login(request, user)  # only if needed
-                return redirect('update_user')
-        else:
-            form = UserUpdateForm(instance=user)
-
-        return render(request, 'update_user.html', {'form': form})
-    else:
+    if not request.user.is_authenticated:
         messages.error(request, "You must be logged in to update your profile.")
         return redirect('home')
+
+    user = request.user
+    profile_user = get_object_or_404(Profile, user=user)
+
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, request.FILES, instance=user)
+        profile_form = ProfilePicForm(request.POST, request.FILES, instance=profile_user)
+        print(request.FILES)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile = profile_form.save(commit=False)
+            print("Uploaded image file:", profile.profile_image)
+            profile.save()
+
+            messages.success(request, "Your profile has been updated.")
+            login(request, user)  
+            return redirect('home')
+    else:
+        user_form = UserUpdateForm(instance=user)
+        profile_form = ProfilePicForm(instance=profile_user)
+
+    return render(request, 'update_user.html', {
+        'user_form': user_form,
+        'profile_form': profile_form
+    })
