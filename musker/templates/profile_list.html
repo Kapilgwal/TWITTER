@@ -11,7 +11,15 @@
             {% for profile in profiles %}
                 <div class="col">
                     <div class="card h-100">
-                        <img src="{% static 'images/download.png' %}" class="card-img-top" alt="{{ profile.user.username }}'s Profile Image">
+                        {% if profile.profile_image %}
+
+                        <img src="{{profile.profile_image.url}}" width=200 height=200 class="card-img-top" alt="{{ profile.user.username }}">
+                        
+                        {% else %}
+
+                        <img src="{% static 'images/default_profile_pic.png' %}" class="img-fluid rounded-start" alt="Profile Image">
+
+                        {% endif %}
                         <div class="card-body">
                             <h5 class="card-title">{{ profile.user.username }}</h5>
                             <p class="card-text">@{{ profile.user.username|lower }}</p>

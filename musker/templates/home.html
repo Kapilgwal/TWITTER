@@ -1,54 +1,71 @@
 {% extends 'base.html' %}
-{% load static %}
-
+{% load static %} 
 {% block content %}
 <div class="container mt-4">
-
-    <!-- Header Row with Form -->
-    <div class="row mb-4 align-items-start">
-        <div class="col-md-8">
-            <h2 class="fw-bold mb-3">📢 Latest Meeps</h2>
-        </div>
-        <div class="col-md-4">
-            {% if form %}
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Post a New Meep</h5>
-                    <form method="POST">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Post</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            {% endif %}
-        </div>
+  <!-- Header Row with Form -->
+  <div class="row mb-4 align-items-start">
+    <div class="col-md-8">
+      <h2 class="fw-bold mb-3">📢 Latest Meeps</h2>
     </div>
-
-    <!-- Meeps List -->
-    {% for meep in meeps %}
-    <div class="card mb-3 shadow-sm">
+    <div class="col-md-4">
+      {% if form %}
+      <div class="card shadow-sm">
         <div class="card-body">
-            <div class="d-flex justify-content-between">
-                <div class="d-flex align-items-center">
-                    <img src="{% static 'default-avatar.png' %}" alt="avatar" class="rounded-circle me-2" width="40" height="40">
-                    <a href="{% url 'profile' meep.user.id %}" class="fw-bold text-decoration-none text-dark">
-                        @{{ meep.user.username }}
-                    </a>
-                </div>
-                <div class="text-muted small">{{ meep.created_at|date:"M d, Y · H:i" }}</div>
+          <h5 class="card-title mb-3">Post a New Meep</h5>
+          <form method="POST">
+            {% csrf_token %} {{ form.as_p }}
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">Post</button>
             </div>
-            <hr>
-            <p class="card-text">{{ meep.body }}</p>
+          </form>
         </div>
+      </div>
+      {% endif %}
     </div>
-    {% empty %}
-    <div class="alert alert-info">No meeps to show. Be the first to post!</div>
-    {% endfor %}
+  </div>
 
+  <!-- Meeps List -->
+  {% for meep in meeps %}
+  <div class="card mb-3 shadow-sm">
+    <div class="card-body">
+      <div class="d-flex justify-content-between">
+        <div class="d-flex align-items-center">
+          {% if meep.user.profile.profile_image %}
+          <img
+            src="{{ meep.user.profile.profile_image.url }}"
+            alt="avatar"
+            class="rounded-circle me-2"
+            width="40"
+            height="40"
+          />
+          {% else %}
+          <img
+            src="{% static 'default-avatar.png' %}"
+            alt="avatar"
+            class="rounded-circle me-2"
+            width="40"
+            height="40"
+          />
+          {% endif %}
+
+          <a
+            href="{% url 'profile' meep.user.id %}"
+            class="fw-bold text-decoration-none text-dark"
+          >
+            @{{ meep.user.username }}
+          </a>
+        </div>
+
+        <div class="text-muted small">
+          {{ meep.created_at|date:"M d, Y · H:i" }}
+        </div>
+      </div>
+      <hr />
+      <p class="card-text">{{ meep.body }}</p>
+    </div>
+  </div>
+  {% empty %}
+  <div class="alert alert-info">No meeps to show. Be the first to post!</div>
+  {% endfor %}
 </div>
 {% endblock %}
-
-

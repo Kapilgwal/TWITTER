@@ -1,124 +1,152 @@
-{% extends "base.html" %}
-{% load static %}
-{% block content %}
-
-{% if profile %}
+{% extends "base.html" %} {% load static %} {% block content %} {% if profile %}
 <div class="container mt-4">
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body d-flex align-items-center">
+      <div>
+        <h4 class="mb-1">@{{ profile.user.username }}</h4>
+        <p class="text-muted mb-0">
+          Joined {{ profile.user.date_joined|date:"F Y" }}
+        </p>
+      </div>
 
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body d-flex align-items-center">
-            <div>
-                <h4 class="mb-1">@{{ profile.user.username }}</h4>
-                <p class="text-muted mb-0">Joined {{ profile.user.date_joined|date:"F Y" }}</p>
-            </div>
-            
-            {% if profile.profile_image %}
+      {% if profile.profile_image %}
 
-            <img src="{{ profile.profile_image.url }}" class="rounded-circle img-thumbnail shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
-            
-            {% endif %}
+      <img
+        src="{{ profile.profile_image.url }}"
+        class="rounded-circle img-thumbnail shadow-sm"
+        style="width: 100px; height: 100px; object-fit: cover"
+      />
 
-            <div class="ms-auto">
-                <form method="POST">
-                    {% csrf_token %}
-                    {% if profile in user.profile.follows.all %}
-                        <button type="submit" class="btn btn-outline-danger" name="follow" value="unfollow">Unfollow</button>
-                    {% else %}
-                        <button type="submit" class="btn btn-outline-success" name="follow" value="follow">Follow</button>
-                    {% endif %}
-                </form>
+      {% endif %}
 
-                <br>
+      <div class="ms-auto">
+        <form method="POST">
+          {% csrf_token %} {% if profile in user.profile.follows.all %}
+          <button
+            type="submit"
+            class="btn btn-outline-danger"
+            name="follow"
+            value="unfollow"
+          >
+            Unfollow
+          </button>
+          {% else %}
+          <button
+            type="submit"
+            class="btn btn-outline-success"
+            name="follow"
+            value="follow"
+          >
+            Follow
+          </button>
+          {% endif %}
+        </form>
 
+        <br />
 
-                {% if request.user.id == profile.user.id %}
+        {% if request.user.id == profile.user.id %}
 
-                <a href="{%url 'update_user' %}" class="btn btn-outline-secondary">
-                    Update Profile
-                </a>
+        <a href="{%url 'update_user' %}" class="btn btn-outline-secondary">
+          Update Profile
+        </a>
 
-                {% endif %}
-            </div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="card-footer d-flex justify-content-start text-center">
+      <div class="me-4">
+        <strong>{{ profile.follows.count }}</strong><br />
+        <small class="text-muted">Following</small>
+      </div>
+      <div>
+        <strong>{{ profile.followed_by.count }}</strong><br />
+        <small class="text-muted">Followers</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <h5 class="mb-3">Posts</h5>
+      {% if meeps %} {% for meep in meeps %}
+      <div class="card mb-3 shadow-sm">
+        <div class="text-center">
+          {% if meep.user.profile.profile_image %}
+          <img
+            src="{{ meep.user.profile.profile_image.url }}"
+            class="img-thumbnail rounded-circle mb-3"
+            style="width: 150px; height: 150px; object-fit: cover"
+            alt="{{ meep.user.username }}"
+          />
+          {% else %}
+          <img
+            src="{% static 'images/default_profile_pic.png' %}"
+            class="img-thumbnail rounded-circle mb-3"
+            style="width: 150px; height: 150px; object-fit: cover"
+            alt="Default Profile Image"
+          />
+          {% endif %}
         </div>
-        <div class="card-footer d-flex justify-content-start text-center">
-            <div class="me-4">
-                <strong>{{ profile.follows.count }}</strong><br>
-                <small class="text-muted">Following</small>
-            </div>
-            <div>
-                <strong>{{ profile.followed_by.count }}</strong><br>
-                <small class="text-muted">Followers</small>
-            </div>
+
+        <div class="card-body">
+          <h6 class="card-subtitle text-muted mb-1">
+            {{ meep.created_at|date:"M d, Y H:i" }}
+          </h6>
+          <p class="card-text">{{ meep.body }}</p>
         </div>
+      </div>
+      {% endfor %} {% else %}
+      <p class="text-muted">No posts yet.</p>
+      {% endif %}
     </div>
 
-    <div class="row">
-        <div class="col-md-8">
-            <h5 class="mb-3">Posts</h5>
-            {% if meeps %}
-                {% for meep in meeps %}
-                <div class="card mb-3 shadow-sm">
-                    <div class="card-body">
-                        <h6 class="card-subtitle text-muted mb-1">
-                            {{ meep.created_at|date:"M d, Y H:i" }}
-                        </h6>
-                        <p class="card-text">{{ meep.body }}</p>
-                    </div>
-                </div>
-                {% endfor %}
-            {% else %}
-                <p class="text-muted">No posts yet.</p>
-            {% endif %}
+    <div class="col-md-4">
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <strong>Following</strong>
         </div>
-
-        <div class="col-md-4">
-
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <strong>Following</strong>
-                </div>
-                <div class="card-body p-0">
-                    {% if profile.follows.all %}
-                    <ul class="list-group list-group-flush">
-                        {% for following in profile.follows.all %}
-                        <li class="list-group-item">
-                            <a href="{% url 'profile' following.user.id %}">@{{ following.user.username }}</a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    {% else %}
-                    <p class="p-3 text-muted">Not following anyone.</p>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <strong>Followers</strong>
-                </div>
-                <div class="card-body p-0">
-                    {% if profile.followed_by.all %}
-                    <ul class="list-group list-group-flush">
-                        {% for follower in profile.followed_by.all %}
-                        <li class="list-group-item">
-                            <a href="{% url 'profile' follower.user.id %}">@{{ follower.user.username }}</a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    {% else %}
-                    <p class="p-3 text-muted">No followers yet.</p>
-                    {% endif %}
-                </div>
-            </div>
-
+        <div class="card-body p-0">
+          {% if profile.follows.all %}
+          <ul class="list-group list-group-flush">
+            {% for following in profile.follows.all %}
+            <li class="list-group-item">
+              <a href="{% url 'profile' following.user.id %}"
+                >@{{ following.user.username }}</a
+              >
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="p-3 text-muted">Not following anyone.</p>
+          {% endif %}
         </div>
+      </div>
+
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-success text-white">
+          <strong>Followers</strong>
+        </div>
+        <div class="card-body p-0">
+          {% if profile.followed_by.all %}
+          <ul class="list-group list-group-flush">
+            {% for follower in profile.followed_by.all %}
+            <li class="list-group-item">
+              <a href="{% url 'profile' follower.user.id %}"
+                >@{{ follower.user.username }}</a
+              >
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="p-3 text-muted">No followers yet.</p>
+          {% endif %}
+        </div>
+      </div>
     </div>
-
+  </div>
 </div>
 {% else %}
 <div class="container mt-4">
-    <div class="alert alert-danger">Profile not found.</div>
+  <div class="alert alert-danger">Profile not found.</div>
 </div>
-{% endif %}
-
-{% endblock content %}
+{% endif %} {% endblock content %}
