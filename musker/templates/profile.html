@@ -93,6 +93,20 @@
             {{ meep.created_at|date:"M d, Y H:i" }}
           </h6>
           <p class="card-text">{{ meep.body }}</p>
+
+          <small class="text-muted">
+        {{ meep.number_of_likes }} Likes •
+
+        {% if user in meep.likes.all %}
+        <a href="{% url 'meep_like' meep.id %}">Unlike</a>
+
+        {% else %}
+
+        <a href="{% url 'meep_like' meep.id %}">Like</a>
+
+
+        {% endif %}
+      </small>
         </div>
       </div>
       {% endfor %} {% else %}

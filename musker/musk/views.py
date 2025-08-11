@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib import messages
 from .models import Profile,Meep
 from .forms import MeepForm,SignUpForm,UserUpdateForm,ProfilePicForm
@@ -37,21 +37,24 @@ def profile_list(request):
     
 def profile(request,pk):
     if request.user.is_authenticated:
-        profile = Profile.objects.get(user_id = pk)
-        meeps = Meep.objects.filter(id = pk).order_by("-created_at")
+        profile = get_object_or_404(Profile, user_id=pk)
+        meeps = Meep.objects.filter(user_id=pk).order_by("-created_at")
+
         if request.method == "POST":
             current_user_profile = request.user.profile
-            action = request.POST['follow']
+            action = request.POST.get('follow')
 
             if action == "unfollow":
                 current_user_profile.follows.remove(profile)
-
             elif action == "follow":
                 current_user_profile.follows.add(profile)
 
             current_user_profile.save()
 
-        return render(request,'profile.html',{"profile" : profile, "meeps" : meeps})
+        return render(request, 'profile.html', {
+            "profile": profile,
+            "meeps": meeps
+        })
     
     else:
         messages.success(request,("You must be logged in the application"))
@@ -134,3 +137,19 @@ def update_user(request):
         'user_form': user_form,
         'profile_form': profile_form
     })
+
+def meep_like(request,pk):
+
+    if request.user.is_authenticated:
+
+        meep = get_object_or_404(Meep, id = pk)
+        if meep.likes.filter(id = request.user.id).exists():
+            meep.likes.remove(request.user)
+        
+        else:
+            meep.likes.add(request.user)
+        return redirect(request.META.get("HTTP_REFERER"))
+
+    else:
+        messages.success(request,("You must be logged in"))
+        return redirect('home')

@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-# Create your models here.
+
 
 class Meep(models.Model):
     user = models.ForeignKey(
@@ -11,6 +11,10 @@ class Meep(models.Model):
     )
     body = models.CharField(max_length = 1000)
     created_at = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField(User,related_name='meep_like',blank=True)
+
+    def number_of_likes(self):
+        return self.likes.count()
 
     def __str__(self):
         return(
