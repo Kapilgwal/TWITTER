@@ -153,3 +153,13 @@ def meep_like(request,pk):
     else:
         messages.success(request,("You must be logged in"))
         return redirect('home')
+
+def meep_show(request,pk):
+    meep = get_object_or_404(Meep,id = pk)
+
+    if meep:
+        return render(request,"show_meep.html", {'meep' : meep})
+
+    else:
+        messages.success(request,"That meep does not exists")
+        return redirect('home')

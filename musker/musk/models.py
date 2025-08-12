@@ -36,10 +36,14 @@ class Profile(models.Model):
     date_modified = models.DateTimeField(User, auto_now=True)
     profile_image = models.ImageField(null=True,blank=True,upload_to="images/")
     
+    profile_bio = models.CharField(max_length=500,null=True,blank=True)
+    homepage_link = models.CharField(max_length=500,null=True,blank=True)
+    instagram_link = models.CharField(max_length=500,null=True,blank=True)
+    twitter_link = models.CharField(max_length=500,null=True,blank=True)
+
     def __str__(self):
         return self.user.username
 
-# Create profile when new user signs up
 @receiver(post_save, sender=User)
 def create_profile(sender,instance,created,**kwargs):
     if created:

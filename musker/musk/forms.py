@@ -5,11 +5,52 @@ from .models import Meep, Profile
 
 
 class ProfilePicForm(forms.ModelForm):
-    profile_image = forms.ImageField(label="Profile Picture")
+    profile_image = forms.ImageField(
+        label="Profile Picture",
+        required=False
+    )
+    profile_bio = forms.CharField(
+        label="Profile Bio",
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'placeholder': 'Profile Bio'
+        })
+    )
+    homepage_link = forms.URLField(
+        label="Homepage Link",
+        required=False,
+        widget=forms.URLInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Homepage link'
+        })
+    )
+    instagram_link = forms.URLField(
+        label="Instagram Link",
+        required=False,
+        widget=forms.URLInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Instagram link'
+        })
+    )
+    twitter_link = forms.URLField(
+        label="Twitter Link",
+        required=False,
+        widget=forms.URLInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Twitter link'
+        })
+    )
 
     class Meta:
         model = Profile
-        fields = ['profile_image']
+        fields = [
+            'profile_image',
+            'profile_bio',
+            'homepage_link',
+            'instagram_link',
+            'twitter_link'
+        ]
 
 
 class MeepForm(forms.ModelForm):
@@ -30,12 +71,11 @@ class MeepForm(forms.ModelForm):
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(
         label="",
-        widget=forms.TextInput(attrs={
+        widget=forms.EmailInput(attrs={
             'class': 'form-control',
             'placeholder': 'Email Address'
         })
     )
-
     first_name = forms.CharField(
         max_length=100,
         label="",
@@ -44,7 +84,6 @@ class SignUpForm(UserCreationForm):
             'placeholder': 'First Name'
         })
     )
-
     last_name = forms.CharField(
         max_length=100,
         label="",
@@ -98,12 +137,11 @@ class SignUpForm(UserCreationForm):
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField(
         label="",
-        widget=forms.TextInput(attrs={
+        widget=forms.EmailInput(attrs={
             'class': 'form-control',
             'placeholder': 'Email Address'
         })
     )
-
     first_name = forms.CharField(
         max_length=100,
         label="",
@@ -112,7 +150,6 @@ class UserUpdateForm(forms.ModelForm):
             'placeholder': 'First Name'
         })
     )
-
     last_name = forms.CharField(
         max_length=100,
         label="",
