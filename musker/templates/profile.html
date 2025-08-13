@@ -1,77 +1,99 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block content %}
-{% if profile %}
+{% extends "base.html" %} {% load static %} {% block content %} {% if profile %}
 <div class="container mt-5">
-
   <!-- Profile Header -->
   <div class="card shadow-sm border-0 rounded-3 mb-4 p-4">
     <div class="row align-items-center">
-      
       <!-- Profile Picture -->
       <div class="col-auto">
         {% if profile.profile_image %}
-          <img src="{{ profile.profile_image.url }}"
-               class="rounded-circle border shadow-sm"
-               style="width: 130px; height: 130px; object-fit: cover;">
+        <img
+          src="{{ profile.profile_image.url }}"
+          class="rounded-circle border shadow-sm"
+          style="width: 130px; height: 130px; object-fit: cover"
+        />
         {% else %}
-          <img src="{% static 'images/default_profile_pic.png' %}"
-               class="rounded-circle border shadow-sm"
-               style="width: 130px; height: 130px; object-fit: cover;">
+        <img
+          src="{% static 'images/default_profile_pic.png' %}"
+          class="rounded-circle border shadow-sm"
+          style="width: 130px; height: 130px; object-fit: cover"
+        />
         {% endif %}
       </div>
 
       <!-- User Info -->
       <div class="col">
         <h3 class="fw-bold mb-1">@{{ profile.user.username }}</h3>
-        <p class="text-muted mb-2">Joined {{ profile.user.date_joined|date:"F Y" }}</p>
-        
+        <p class="text-muted mb-2">
+          Joined {{ profile.user.date_joined|date:"F Y" }}
+        </p>
+
         <!-- Bio -->
         {% if profile.profile_bio %}
-          <p class="mb-2">{{ profile.profile_bio }}</p>
+        <p class="mb-2">{{ profile.profile_bio }}</p>
         {% endif %}
-        
+
         <!-- Links -->
         <div class="mb-2">
           {% if profile.homepage_link %}
-            <a href="{{ profile.homepage_link }}" target="_blank" class="me-2">🌐 Homepage</a>
-          {% endif %}
-          {% if profile.instagram_link %}
-            <a href="{{ profile.instagram_link }}" target="_blank" class="me-2">📸 Instagram</a>
-          {% endif %}
-          {% if profile.twitter_link %}
-            <a href="{{ profile.twitter_link }}" target="_blank">🐦 Twitter</a>
+          <a href="{{ profile.homepage_link }}" target="_blank" class="me-2"
+            >🌐 Homepage</a
+          >
+          {% endif %} {% if profile.instagram_link %}
+          <a href="{{ profile.instagram_link }}" target="_blank" class="me-2"
+            >📸 Instagram</a
+          >
+          {% endif %} {% if profile.twitter_link %}
+          <a href="{{ profile.twitter_link }}" target="_blank">🐦 Twitter</a>
           {% endif %}
         </div>
 
         <!-- Buttons -->
         <div class="d-flex align-items-center">
           <form method="POST" class="me-2">
-            {% csrf_token %}
-            {% if profile in user.profile.follows.all %}
-              <button type="submit" class="btn btn-sm btn-outline-danger" name="follow" value="unfollow">
-                Unfollow
-              </button>
+            {% csrf_token %} {% if profile in user.profile.follows.all %}
+            <button
+              type="submit"
+              class="btn btn-sm btn-outline-danger"
+              name="follow"
+              value="unfollow"
+            >
+              Unfollow
+            </button>
             {% else %}
-              <button type="submit" class="btn btn-sm btn-outline-success" name="follow" value="follow">
-                Follow
-              </button>
+            <button
+              type="submit"
+              class="btn btn-sm btn-outline-success"
+              name="follow"
+              value="follow"
+            >
+              Follow
+            </button>
             {% endif %}
           </form>
 
           {% if request.user.id == profile.user.id %}
-            <a href="{% url 'update_user' %}" class="btn btn-sm btn-outline-secondary">
-              Update Profile
-            </a>
+          <a
+            href="{% url 'update_user' %}"
+            class="btn btn-sm btn-outline-secondary"
+          >
+            Update Profile
+          </a>
           {% endif %}
         </div>
       </div>
 
       <!-- Stats -->
       <div class="col-auto text-center">
-        <div><strong>{{ profile.follows.count }}</strong><br><small>Following</small></div>
-        <div><strong>{{ profile.followed_by.count }}</strong><br><small>Followers</small></div>
+        <div>
+          <strong>{{ profile.follows.count }}</strong><br /><small
+            >Following</small
+          >
+        </div>
+        <div>
+          <strong>{{ profile.followed_by.count }}</strong><br /><small
+            >Followers</small
+          >
+        </div>
       </div>
     </div>
   </div>
@@ -79,96 +101,132 @@
   <!-- Tabs -->
   <ul class="nav nav-tabs mb-3" id="profileTabs" role="tablist">
     <li class="nav-item">
-      <a class="nav-link active" id="posts-tab" data-bs-toggle="tab" href="#posts" role="tab">Posts</a>
+      <a
+        class="nav-link active"
+        id="posts-tab"
+        data-bs-toggle="tab"
+        href="#posts"
+        role="tab"
+        >Posts</a
+      >
     </li>
     <li class="nav-item">
-      <a class="nav-link" id="following-tab" data-bs-toggle="tab" href="#following" role="tab">Following</a>
+      <a
+        class="nav-link"
+        id="following-tab"
+        data-bs-toggle="tab"
+        href="#following"
+        role="tab"
+        >Following</a
+      >
     </li>
     <li class="nav-item">
-      <a class="nav-link" id="followers-tab" data-bs-toggle="tab" href="#followers" role="tab">Followers</a>
+      <a
+        class="nav-link"
+        id="followers-tab"
+        data-bs-toggle="tab"
+        href="#followers"
+        role="tab"
+        >Followers</a
+      >
     </li>
   </ul>
 
   <!-- Tab Content -->
   <div class="tab-content" id="profileTabsContent">
-
     <!-- Posts -->
     <div class="tab-pane fade show active" id="posts" role="tabpanel">
-      {% if meeps %}
-        {% for meep in meeps %}
-          <div class="card border-0 shadow-sm mb-3">
-            <div class="card-body">
-              <small class="text-muted">{{ meep.created_at|date:"M d, Y H:i" }}</small>
-              <p class="mt-2">{{ meep.body }}</p>
-              <small class="text-muted">
-                ❤️ {{ meep.number_of_likes }} Likes •
-                {% if user in meep.likes.all %}
-                  <a href="{% url 'meep_like' meep.id %}">Unlike</a>
-                {% else %}
-                  <a href="{% url 'meep_like' meep.id %}">Like</a>
-                {% endif %}
-              </small>
-            </div>
-          </div>
-        {% endfor %}
-      {% else %}
-        <p class="text-muted">No posts yet.</p>
+      {% if meeps %} {% for meep in meeps %}
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+          <small class="text-muted"
+            >{{ meep.created_at|date:"M d, Y H:i" }}</small
+          >
+          <p class="mt-2">{{ meep.body }}</p>
+          <small class="text-muted">
+            ❤️ {{ meep.number_of_likes }} Likes • {% if user in meep.likes.all
+            %}
+            <a href="{% url 'meep_like' meep.id %}">Unlike</a>
+            {% else %}
+            <a href="{% url 'meep_like' meep.id %}">Like</a>
+            {% endif %}
+          </small>
+        </div>
+      </div>
+      {% endfor %} {% else %}
+      <p class="text-muted">No posts yet.</p>
       {% endif %}
     </div>
 
     <!-- Following -->
-<div class="tab-pane fade" id="following" role="tabpanel">
-  {% if profile.follows.all %}
-    <ul class="list-group list-group-flush">
-      {% for following in profile.follows.all %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <a href="{% url 'profile' following.user.id %}" class="fw-semibold text-decoration-none">
+    <div class="tab-pane fade" id="following" role="tabpanel">
+      {% if profile.follows.all %}
+      <ul class="list-group list-group-flush">
+        {% for following in profile.follows.all %}
+        <li
+          class="list-group-item d-flex justify-content-between align-items-center"
+        >
+          <a
+            href="{% url 'profile' following.user.id %}"
+            class="fw-semibold text-decoration-none"
+          >
             @{{ following.user.username }}
           </a>
-          <a href="{% url 'unfollow' following.user.id %}" class="btn btn-sm btn-outline-danger">
+          <a
+            href="{% url 'unfollow' following.user.id %}"
+            class="btn btn-sm btn-outline-danger"
+          >
             Unfollow
           </a>
         </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p class="text-muted text-center">Not following anyone.</p>
-  {% endif %}
-</div>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="text-muted text-center">Not following anyone.</p>
+      {% endif %}
+    </div>
 
     <!-- Followers -->
-<div class="tab-pane fade" id="followers" role="tabpanel">
-  {% if profile.followed_by.all %}
-    <ul class="list-group list-group-flush">
-      {% for follower in profile.followed_by.all %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <a href="{% url 'profile' follower.user.id %}" class="fw-semibold text-decoration-none">
+    <div class="tab-pane fade" id="followers" role="tabpanel">
+      {% if profile.followed_by.all %}
+      <ul class="list-group list-group-flush">
+        {% for follower in profile.followed_by.all %}
+        <li
+          class="list-group-item d-flex justify-content-between align-items-center"
+        >
+          <a
+            href="{% url 'profile' follower.user.id %}"
+            class="fw-semibold text-decoration-none"
+          >
             @{{ follower.user.username }}
           </a>
 
           {% if follower in profile.follows.all %}
-            <a href="{% url 'unfollow' follower.user.id %}" class="btn btn-sm btn-outline-danger">
-              Unfollow
-            </a>
+          <a
+            href="{% url 'unfollow' follower.user.id %}"
+            class="btn btn-sm btn-outline-danger"
+          >
+            Unfollow
+          </a>
           {% else %}
-            <a href="{% url 'follow' follower.user.id %}" class="btn btn-sm btn-outline-success">
-              Follow
-            </a>
+          <a
+            href="{% url 'follow' follower.user.id %}"
+            class="btn btn-sm btn-outline-success"
+          >
+            Follow
+          </a>
           {% endif %}
         </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p class="text-muted text-center">No followers yet.</p>
-  {% endif %}
-</div>
-
-
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="text-muted text-center">No followers yet.</p>
+      {% endif %}
+    </div>
   </div>
 </div>
 {% else %}
 <div class="container mt-4">
   <div class="alert alert-danger">Profile not found.</div>
 </div>
-{% endif %}
-{% endblock %}
+{% endif %} {% endblock %}
