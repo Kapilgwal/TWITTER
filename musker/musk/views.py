@@ -35,6 +35,32 @@ def profile_list(request):
         messages.success(request,("You must be logged in the application"))
         return redirect('home')
     
+def unfollow(request,pk):
+    if request.user.is_authenticated:
+        profile = Profile.objects.get(user_id = pk)
+        request.user.profile.follows.remove(profile)
+        request.user.profile.save()
+        messages.success(request,(f"You unfollowed the {profile.user.username}"))
+        return redirect(request.META.get("HTTP_REFERER"))
+        
+    else:
+        messages.success(request,("You must be logged in"))
+        redirect('home')
+    
+def follow(request,pk):
+    if request.user.is_authenticated:
+        profile = Profile.objects.get(user_id = pk)
+        request.user.profile.follows.add(profile)
+        request.user.profile.save()
+        messages.success(request,(f"You followed the {profile.user.username}"))
+        return redirect(request.META.get("HTTP_REFERER"))
+        
+    else:
+        messages.success(request,("You must be logged in"))
+        redirect('home')
+
+
+    
 def profile(request,pk):
     if request.user.is_authenticated:
         profile = get_object_or_404(Profile, user_id=pk)
