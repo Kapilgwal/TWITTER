@@ -45,6 +45,7 @@
           {% endif %} {% if profile.twitter_link %}
           <a href="{{ profile.twitter_link }}" target="_blank">🐦 Twitter</a>
           {% endif %}
+
         </div>
 
         <!-- Buttons -->
@@ -144,13 +145,22 @@
           >
           <p class="mt-2">{{ meep.body }}</p>
           <small class="text-muted">
-            ❤️ {{ meep.number_of_likes }} Likes • {% if user in meep.likes.all
-            %}
+            ❤️ {{ meep.number_of_likes }} Likes • 
+            {% if user in meep.likes.all%}
             <a href="{% url 'meep_like' meep.id %}">Unlike</a>
             {% else %}
-            <a href="{% url 'meep_like' meep.id %}">Like</a>
+            <a href="{% url 'meep_like' meep.id %}" >Like</a>
+            {% endif %}
+
+            {% if request.user.username == profile.user.username %}
+            <a href="{% url 'delete_meep' meep.id %}" class="btn btn-sm rounded-pill px-3 ms-auto">🗑️ Delete</a>
+            {% endif %}
+
+            {% if request.user.username == profile.user.username %}
+            <a href="{% url 'edit_meep' meep.id %}" class="btn btn-sm rounded-pill px-3 ms-auto">Update</a>
             {% endif %}
           </small>
+
         </div>
       </div>
       {% endfor %} {% else %}
